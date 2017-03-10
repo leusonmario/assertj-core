@@ -13,6 +13,7 @@
 package org.assertj.core.api;
 
 import static org.assertj.core.extractor.Extractors.byName;
+import static org.assertj.core.extractor.Extractors.extractedPropertiesOrFieldsDescription;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -532,7 +533,8 @@ public abstract class AbstractObjectAssert<SELF extends AbstractObjectAssert<SEL
   @CheckReturnValue
   public AbstractObjectArrayAssert<?, Object> extracting(String... propertiesOrFields) {
     Tuple values = byName(propertiesOrFields).extract(actual);
-    return new ObjectArrayAssert<>(values.toArray());
+    String description = extractedPropertiesOrFieldsDescription(propertiesOrFields);
+    return new ObjectArrayAssert<>(values.toArray()).as(description);
   }
 
   /**

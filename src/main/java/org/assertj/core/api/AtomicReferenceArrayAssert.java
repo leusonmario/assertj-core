@@ -14,6 +14,7 @@ package org.assertj.core.api;
 
 import static org.assertj.core.api.filter.Filters.filter;
 import static org.assertj.core.extractor.Extractors.byName;
+import static org.assertj.core.extractor.Extractors.extractedPropertiesOrFieldsDescription;
 import static org.assertj.core.extractor.Extractors.resultOf;
 import static org.assertj.core.util.Arrays.array;
 import static org.assertj.core.util.Arrays.isArray;
@@ -561,6 +562,7 @@ public class AtomicReferenceArrayAssert<T>
    * @throws NullPointerException if the given {@code Index} is {@code null}.
    * @throws AssertionError if the actual AtomicReferenceArray contains the given object at the given index.
    */
+  @Override
   public AtomicReferenceArrayAssert<T> doesNotContain(T value, Index index) {
     arrays.assertDoesNotContain(info, array, value, index);
     return myself;
@@ -1209,6 +1211,7 @@ public class AtomicReferenceArrayAssert<T>
    * @throws NullPointerException if the given comparator is {@code null}.
    * @return {@code this} assertion object.
    */
+  @Override
   @CheckReturnValue
   public AtomicReferenceArrayAssert<T> usingElementComparator(Comparator<? super T> elementComparator) {
     this.arrays = new ObjectArrays(new ComparatorBasedComparisonStrategy(elementComparator));
@@ -1568,7 +1571,8 @@ public class AtomicReferenceArrayAssert<T>
   @CheckReturnValue
   public ObjectArrayAssert<Object> extracting(String fieldOrProperty) {
     Object[] values = FieldsOrPropertiesExtractor.extract(array, byName(fieldOrProperty));
-    return new ObjectArrayAssert<>(values);
+    String description = extractedPropertiesOrFieldsDescription(fieldOrProperty);
+    return new ObjectArrayAssert<>(values).as(description);
   }
 
   /**
@@ -1619,7 +1623,8 @@ public class AtomicReferenceArrayAssert<T>
   public <P> ObjectArrayAssert<P> extracting(String fieldOrProperty, Class<P> extractingType) {
     @SuppressWarnings("unchecked")
     P[] values = (P[]) FieldsOrPropertiesExtractor.extract(array, byName(fieldOrProperty));
-    return new ObjectArrayAssert<>(values);
+    String description = extractedPropertiesOrFieldsDescription(fieldOrProperty);
+    return new ObjectArrayAssert<>(values).as(description);
   }
 
   /**
@@ -1678,8 +1683,8 @@ public class AtomicReferenceArrayAssert<T>
   public ObjectArrayAssert<Tuple> extracting(String... propertiesOrFields) {
     Object[] values = FieldsOrPropertiesExtractor.extract(array, byName(propertiesOrFields));
     Tuple[] result = Arrays.copyOf(values, values.length, Tuple[].class);
-
-    return new ObjectArrayAssert<>(result);
+    String description = extractedPropertiesOrFieldsDescription(propertiesOrFields);
+    return new ObjectArrayAssert<>(result).as(description);
   }
 
   /**
@@ -2029,7 +2034,7 @@ public class AtomicReferenceArrayAssert<T>
   @CheckReturnValue
   public AtomicReferenceArrayAssert<T> filteredOn(String propertyOrFieldName, Object expectedValue) {
     Iterable<? extends T> filteredIterable = filter(array).with(propertyOrFieldName, expectedValue).get();
-    return new AtomicReferenceArrayAssert<>(new AtomicReferenceArray<T>(toArray(filteredIterable)));
+    return new AtomicReferenceArrayAssert<>(new AtomicReferenceArray<>(toArray(filteredIterable)));
   }
 
   /**
@@ -2149,7 +2154,7 @@ public class AtomicReferenceArrayAssert<T>
     checkNotNull(filterOperator);
     Filters<? extends T> filter = filter(array).with(propertyOrFieldName);
     filterOperator.applyOn(filter);
-    return new AtomicReferenceArrayAssert<>(new AtomicReferenceArray<T>(toArray(filter.get())));
+    return new AtomicReferenceArrayAssert<>(new AtomicReferenceArray<>(toArray(filter.get())));
   }
 
   /**
@@ -2188,7 +2193,7 @@ public class AtomicReferenceArrayAssert<T>
   @CheckReturnValue
   public AtomicReferenceArrayAssert<T> filteredOn(Condition<? super T> condition) {
     Iterable<? extends T> filteredIterable = filter(array).being(condition).get();
-    return new AtomicReferenceArrayAssert<>(new AtomicReferenceArray<T>(toArray(filteredIterable)));
+    return new AtomicReferenceArrayAssert<>(new AtomicReferenceArray<>(toArray(filteredIterable)));
   }
 
 }

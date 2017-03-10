@@ -15,6 +15,7 @@ package org.assertj.core.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.filter.Filters.filter;
 import static org.assertj.core.extractor.Extractors.byName;
+import static org.assertj.core.extractor.Extractors.extractedPropertiesOrFieldsDescription;
 import static org.assertj.core.extractor.Extractors.resultOf;
 import static org.assertj.core.util.Arrays.isArray;
 import static org.assertj.core.util.IterableUtil.toArray;
@@ -42,7 +43,6 @@ import org.assertj.core.groups.FieldsOrPropertiesExtractor;
 import org.assertj.core.groups.Tuple;
 import org.assertj.core.internal.CommonErrors;
 import org.assertj.core.internal.ComparatorBasedComparisonStrategy;
-import org.assertj.core.internal.TypeComparators;
 import org.assertj.core.internal.ComparisonStrategy;
 import org.assertj.core.internal.FieldByFieldComparator;
 import org.assertj.core.internal.IgnoringFieldsComparator;
@@ -52,6 +52,7 @@ import org.assertj.core.internal.ObjectArrays;
 import org.assertj.core.internal.Objects;
 import org.assertj.core.internal.OnFieldsComparator;
 import org.assertj.core.internal.RecursiveFieldByFieldComparator;
+import org.assertj.core.internal.TypeComparators;
 import org.assertj.core.util.CheckReturnValue;
 import org.assertj.core.util.IterableUtil;
 import org.assertj.core.util.Preconditions;
@@ -590,7 +591,9 @@ public abstract class AbstractIterableAssert<SELF extends AbstractIterableAssert
   @CheckReturnValue
   public AbstractListAssert<?, List<? extends Object>, Object, ObjectAssert<Object>> extracting(String propertyOrField) {
     List<Object> values = FieldsOrPropertiesExtractor.extract(actual, byName(propertyOrField));
-    return newListAssertInstance(values);
+    String description = this.info.descriptionText().isEmpty() ? extractedPropertiesOrFieldsDescription(propertyOrField)
+        : this.info.descriptionText();
+    return newListAssertInstance(values).as(description);
   }
 
   /**
@@ -771,7 +774,8 @@ public abstract class AbstractIterableAssert<SELF extends AbstractIterableAssert
                                                                                      Class<P> extractingType) {
     @SuppressWarnings("unchecked")
     List<P> values = (List<P>) FieldsOrPropertiesExtractor.extract(actual, byName(propertyOrField));
-    return newListAssertInstance(values);
+    String description = extractedPropertiesOrFieldsDescription(propertyOrField);
+    return newListAssertInstance(values).as(description);
   }
 
   /**
@@ -861,7 +865,8 @@ public abstract class AbstractIterableAssert<SELF extends AbstractIterableAssert
   @CheckReturnValue
   public AbstractListAssert<?, List<? extends Tuple>, Tuple, ObjectAssert<Tuple>> extracting(String... propertiesOrFields) {
     List<Tuple> values = FieldsOrPropertiesExtractor.extract(actual, byName(propertiesOrFields));
-    return newListAssertInstance(values);
+    String description = extractedPropertiesOrFieldsDescription(propertiesOrFields);
+    return newListAssertInstance(values).as(description);
   }
 
   /**
