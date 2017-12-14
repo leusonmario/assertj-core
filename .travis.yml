@@ -1,12 +1,26 @@
+
+sudo: required
 language: java
-script: mvn clean verify
 
-sudo: false
-
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
-
-jdk:  
+jdk:
    - oraclejdk8
+
+
+script:
+  - mvn clean cobertura:cobertura -Dtest=ForkedBooter#runSuitesInProcess -DfailIfNoTests=false
+
+before_deploy:
+- tar -zcvf coverage-result.tar.gz /home/travis/build/leusonmario/assertj-core/target/site/cobertura
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "KE5YpMzpCJyMVUY4RlzAtl98Nrc2rTVRZhUpV5YLrqTu4RWujj949k4HMnyX3PVM9QQEZKS3SVS2AC+d+wWPwbgZiR4UtguPy+37t8hYEt2L0gQivstlHQ7EaGVjY6kc9Ngq4MmG8OqDNwbe6u60H2uSAdZt0AZElQXPaNoM/tj0CfmNbhTOIG0wnbwAROfxx4QhwK/+cmZqDrxeCCSWMS04U7cGKGV5m+aWu9/5qwaOgJSW4rveORPoM/a45kJWH1E0BDDoK5mFoouIqS2nFybjHXC7tl4dbGH4jx5/UxSjV3ZHPKJzNsGNh1tOdHDXaE2dkCbBRK7iWG17VXyh9ejeajP3Qq0iegqTKmCiZHv+rwgwhjwprZjDLgaBMEnrGaG3IQnvNfx4KKe6CGrHXiE5S9Z5JO2lA8UccQekxtMtTy2AFlS0eIs7x4TuyApDh9bfXfg1ZjcqZqVCXsRM26bcf2Yb7hPF5QvD2esNb3q8L9untzZ6mHEN+vZCz+rF5st+YtUsfF5+uQpkFN3C7Imseg2L1i11Dro2NxHTeCXJcPSEgp9ekQXJJaMBY6jF6PnSvHKM7DM/FyFQHg7z/BKYlsgDphHKyD+VNyuftipN9bn9ccZ0OnREuL3zc1Eohlsy4mUGJDFRPnJ/JtX12DK/f5wvhfop4e7mlMtj8ic="
+
+
+  file: coverage-result.tar.gz
+  file_glob: true
+  overwrite: true
+  skip_cleanup: true
+  on:
+    tags: true
